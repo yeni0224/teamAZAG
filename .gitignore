@@ -30,6 +30,7 @@ share/python-wheels/
 MANIFEST
 venv/
 env/
+yenivenv/
 
 #IDE/Editor Settings
 .vscode/
