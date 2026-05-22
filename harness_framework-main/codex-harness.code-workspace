@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "name": "codex-harness",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.encoding": "utf8",
+    "files.eol": "\n",
+    "python.testing.unittestEnabled": true,
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestArgs": [
+      "-v",
+      "-s",
+      "scripts",
+      "-p",
+      "test_*.py"
+    ],
+    "search.exclude": {
+      "**/__pycache__": true,
+      "**/.git": true
+    },
+    "files.exclude": {
+      "**/__pycache__": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python"
+    ]
+  }
+}

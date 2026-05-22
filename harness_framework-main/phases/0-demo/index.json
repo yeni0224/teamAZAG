@@ -1,0 +1,11 @@
+{
+  "project": "Codex Harness Demo",
+  "phase": "demo",
+  "steps": [
+    {
+      "step": 0,
+      "name": "runner-smoke",
+      "status": "pending"
+    }
+  ]
+}

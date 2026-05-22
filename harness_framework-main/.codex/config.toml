@@ -1,0 +1,7 @@
+# Project-local defaults for Codex harness runs.
+#
+# The runner still passes explicit flags so automated runs are reproducible.
+
+model = "gpt-5.5"
+sandbox_mode = "workspace-write"
+approval_policy = "never"
