@@ -3,6 +3,10 @@
     {
       "dir": "0-demo",
       "status": "pending"
+    },
+    {
+      "dir": "1-project-azag-review",
+      "status": "pending"
     }
   ]
 }

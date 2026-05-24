@@ -34,7 +34,7 @@ erDiagram
     uuid user_id FK
     string role
     text content
-    jsonb sources_json
+    json sources_json
     timestamp created_at
   }
 
@@ -63,8 +63,8 @@ erDiagram
   CHUNK_EMBEDDINGS {
     uuid id PK
     uuid chunk_id FK
-    string faiss_index_path
-    int faiss_index_id
+    string vector_store
+    string vector_id
     string embedding_model
     timestamp created_at
   }

@@ -59,19 +59,13 @@ erDiagram
     uuid created_by FK
     uuid source_document_id FK
     uuid source_chunk_id FK
-    uuid linked_issue_id FK
     uuid reviewed_by FK
     string title
-    text description
     string status
     string priority
     string source_type
     string approval_status
-    int confidence_score
-    timestamp reviewed_at
-    timestamp due_date
-    timestamp created_at
-    timestamp updated_at
+    date due_date
   }
 
   ISSUES {
@@ -81,12 +75,6 @@ erDiagram
     uuid assignee_id FK
     uuid source_document_id FK
     string title
-    text description
     string severity
     string status
-    string source_type
-    int confidence_score
-    boolean is_candidate
-    timestamp created_at
-    timestamp updated_at
   }

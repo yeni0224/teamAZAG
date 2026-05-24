@@ -1,10 +1,12 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import uuid
+from pathlib import Path
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -14,6 +16,8 @@ from app.models import ChatMessage, Document, HandoffReport, Issue, Project, Tod
 
 
 app = FastAPI(title="TeamAZAG Backend", version="0.1.0")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = ROOT_DIR / 'frontend'
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:4173", "http://localhost:4173"],
@@ -22,6 +26,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+if FRONTEND_DIR.is_dir():
+    app.mount('/front', StaticFiles(directory=FRONTEND_DIR, html=True), name='front')
 
 FRONTEND_DASHBOARD = {
     "summary": {

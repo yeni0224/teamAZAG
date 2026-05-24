@@ -55,8 +55,8 @@ erDiagram
   CHUNK_EMBEDDINGS {
     uuid id PK
     uuid chunk_id FK
-    string faiss_index_path
-    int faiss_index_id
+    string vector_store
+    string vector_id
     string embedding_model
     timestamp created_at
   }
@@ -67,6 +67,6 @@ erDiagram
     uuid document_id FK
     string summary_type
     text summary
-    jsonb extracted_json
+    json extracted_json
     timestamp created_at
   }
