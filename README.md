@@ -1,75 +1,116 @@
-# TeamAZAG DB Starter
+# Project AZAG
 
-TeamAZAG 프로젝트 문서, Todo, 이슈, AI 채팅, 리포트, 인수인계 정보를 프로젝트 단위로 관리하기 위한 PostgreSQL DB 초안입니다.
+TeamAZAG 프로젝트 관리용 DB, API, 프론트 시안, ERD 문서 모음입니다.
 
-## 현재 DB 방향
+## 꼭 받을 브랜치
 
-- 관계형 데이터베이스는 PostgreSQL을 사용합니다.
-- 모든 PK/FK는 `UUID`, 생성/수정 시각은 `TIMESTAMP`, 유연한 JSON 필드는 `JSONB`를 사용합니다.
-- 문서 조각 벡터 검색은 FAISS를 사용합니다.
-- PostgreSQL에는 벡터 원본을 저장하지 않고 `chunk_embeddings.faiss_index_path`, `chunk_embeddings.faiss_index_id` 같은 FAISS 참조 정보만 저장합니다.
-- AI가 추출한 Todo 후보와 사용자가 만든 공식 Todo는 모두 `todos` 테이블에 저장합니다.
-- Todo 화면은 `source_type`, `approval_status`, `confidence_score`로 AI 후보와 신뢰도를 표시합니다.
-- 이슈 화면은 `issues.is_candidate`로 후보 탭과 확정 탭을 나누고, `confidence_score`로 후보 신뢰도를 표시합니다.
-- 리포트는 일간 없이 `weekly_reports`, `monthly_reports`만 둡니다.
-- 채팅 출처는 MVP 기준으로 `chat_messages.sources_json JSONB`에 유지합니다.
+- 브랜치: `SeongHo`
+- 저장소: `https://github.com/yeni0224/teamAZAG.git`
+- 처음 받기:
 
-## 주요 파일
+```bash
+git clone -b SeongHo https://github.com/yeni0224/teamAZAG.git
+```
 
-- `docs/db-design-v2.md`: ERD와 DB 설계 메모
-- `docs/table-definition.md`: 테이블 역할과 주요 제약 조건
-- `docs/team-memory-erd.mmd`: 전체 Mermaid ERD
-- `docs/erd-split/`: 영역별 분할 ERD
-- `db/schema.postgresql.sql`: PostgreSQL 테이블 생성 SQL
-- `db/seed.postgresql.sql`: 개발용 샘플 데이터
-- `db/dashboard-queries.postgresql.sql`: 화면별 조회 쿼리 예시
-- `db/verify.postgresql.sql`: 스키마와 샘플 데이터 검증 쿼리
-- `app/models.py`: SQLAlchemy ORM 초안
-- `alembic/versions/20260513_0001_create_teammemory_schema.py`: Alembic 마이그레이션 초안
-- `opsradar_v2/`: 최종 FastAPI 백엔드 폴더 구조 초안
+- 이미 받은 경우:
 
-## 실행 순서
+```bash
+git fetch origin
+git checkout SeongHo
+git pull origin SeongHo
+```
 
-먼저 PostgreSQL에서 개발용 데이터베이스를 만듭니다.
+- 다른 브랜치 말고 `SeongHo`를 받으면 됩니다.
+
+## 현재 남긴 것
+
+- `app/`: FastAPI 백엔드 초안
+- `frontend/`: 단일 HTML 프론트 화면
+- `db/`: PostgreSQL 스키마, 시드, 검증 SQL
+- `alembic/`: DB 마이그레이션 초안
+- `docs/`: PRD, ERD, 테이블 정의서
+- `tools/`: ERD 이미지 생성 스크립트
+- `requirements.txt`: Python 의존성
+
+## 정리한 것
+
+- `opsradar_v2/`: 이전 백엔드 구조라 삭제
+- `harness_framework-main/`: 템플릿/검토용 도구라 삭제
+- `PROJECT_CONTEXT.md`: 템플릿 변환 메모라 삭제
+
+## 실행 준비
+
+- Python 3.11 이상 권장
+- PostgreSQL 필요
+- 기본 DB 주소:
+
+```text
+postgresql+psycopg://postgres:postgres@localhost:5432/teamazag
+```
+
+- DB 주소를 바꿀 때:
+
+```bash
+set DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST:PORT/DBNAME
+```
+
+## 설치
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+## DB 생성
 
 ```bash
 createdb teamazag
-```
-
-그 다음 아래 순서로 SQL 파일을 실행합니다.
-
-```bash
 psql -d teamazag -f db/schema.postgresql.sql
 psql -d teamazag -f db/seed.postgresql.sql
 psql -d teamazag -f db/verify.postgresql.sql
 ```
 
-## Todo 승인 모델
+## 서버 실행
 
-AI가 뽑아낸 할 일 후보와 사람이 직접 만든 공식 할 일은 같은 `todos` 테이블을 사용합니다.
-
-```text
-source_type = manual, approval_status = approved  -> 사람이 직접 만든 공식 Todo
-source_type = ai,     approval_status = pending   -> 승인 대기 중인 AI 추출 Todo
-source_type = ai,     approval_status = approved  -> 승인된 AI 추출 Todo
-source_type = ai,     approval_status = rejected  -> 거절된 AI 추출 Todo
+```bash
+uvicorn app.main:app --reload
 ```
 
-## 백엔드 API 초안
+- API 문서: `http://127.0.0.1:8000/docs`
+- 프론트 화면: `http://127.0.0.1:8000/front`
+- 상태 확인: `http://127.0.0.1:8000/health`
 
-```text
-GET /projects/{project_id}/dashboard
-GET /projects/{project_id}/todos
-GET /projects/{project_id}/todos/ai-pending
-POST /projects/{project_id}/todos
-PATCH /todos/{todo_id}
-PATCH /todos/{todo_id}/approval
-GET /projects/{project_id}/issues
-POST /projects/{project_id}/issues
-PATCH /issues/{issue_id}
-GET /projects/{project_id}/documents
-POST /projects/{project_id}/documents
-POST /projects/{project_id}/chat
-GET /projects/{project_id}/chat/messages
-GET /projects/{project_id}/handoff/latest
-```
+## 주요 API
+
+- `GET /api/dashboard`: 프론트 대시보드 데이터
+- `GET /api/analysis/uploads`: 자료 업로드 목록
+- `POST /api/analysis/uploads`: 자료 업로드 임시 등록
+- `GET /api/todos`: TODO 목록
+- `GET /api/issues`: 이슈 목록
+- `GET /api/reports/default`: 보고서 초안
+- `GET /api/knowledge`: 지식 전달 데이터
+- `POST /api/assistant/chat`: AI Assistant 임시 응답
+- `GET /projects`: DB 프로젝트 목록
+- `GET /projects/{project_id}/dashboard`: 프로젝트 대시보드
+- `GET /projects/{project_id}/todos`: 프로젝트 TODO
+- `GET /projects/{project_id}/issues`: 프로젝트 이슈
+- `GET /projects/{project_id}/documents`: 프로젝트 문서
+- `GET /projects/{project_id}/handoff/latest`: 최신 인수인계
+
+## 문서 위치
+
+- `docs/PRD.md`: 제품 요구사항
+- `docs/db-design-v2.md`: DB 설계 메모
+- `docs/table-definition.md`: 테이블 정의
+- `docs/project-azag-erdcloud-white.png`: 전체 ERD 이미지
+- `docs/erd-split/`: 영역별 ERD
+- `docs/teamazag-functions-v3.md`: 기능 정리
+
+## 작업 기준
+
+- 현재 기준 작업 브랜치는 `SeongHo`입니다.
+- 새 작업 전에는 `git pull origin SeongHo`를 먼저 실행합니다.
+- 커밋 전에는 `git status`로 변경 파일을 확인합니다.
+- DB 관련 변경은 `db/`, `alembic/`, `app/models.py`를 같이 확인합니다.
+- 화면 관련 변경은 `frontend/index.html`과 `/api/*` 응답을 같이 확인합니다.
